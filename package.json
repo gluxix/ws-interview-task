@@ -1,0 +1,22 @@
+{
+  "name": "ws-interview-task",
+  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/client/index.js",
+  "scripts": {
+    "start:server": "node bin/server.js",
+    "start:client": "node bin/client.js",
+    "test:unit": "mocha test/unit/**/*.test.js",
+    "test:integration": "mocha test/integration/**/*.test.js"
+  },
+  "keywords": [],
+  "author": "Vladimir Glukhikh",
+  "license": "ISC",
+  "dependencies": {
+    "ws": "^8.13.0"
+  },
+  "devDependencies": {
+    "mocha": "^10.2.0"
+  }
+}
