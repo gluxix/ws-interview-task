@@ -33,7 +33,7 @@ class SubscriptionClient extends EventEmitter {
 
     this.#ws = new WebSocket(this.#serverAddress);
     this.#ws
-      .on('open', () => {
+      .once('open', () => {
         this.emit(Events.Open);
       })
       .on('message', (data) => {
@@ -56,7 +56,7 @@ class SubscriptionClient extends EventEmitter {
   
       this.#ws = new WebSocket(this.#serverAddress);
       this.#ws
-        .on('open', () => {
+        .once('open', () => {
           this.emit(Events.Open);
           resolve();
         })

@@ -117,7 +117,7 @@ describe('Integration tests', () => {
 function subscribeAndWait(client) {
   client.subscribe();
   return new Promise((resolve) => {
-    client.on('subscribed', (updatedAt) => {
+    client.once('subscribed', (updatedAt) => {
       resolve(updatedAt);
     });
   });
@@ -126,7 +126,7 @@ function subscribeAndWait(client) {
 function unsubscribeAndWait(client) {
   client.unsubscribe();
   return new Promise((resolve) => {
-    client.on('unsubscribed', (updatedAt) => {
+    client.once('unsubscribed', (updatedAt) => {
       resolve(updatedAt);
     });
   });
@@ -135,7 +135,7 @@ function unsubscribeAndWait(client) {
 function countAndWait(client) {
   client.subscribersCount();
   return new Promise((resolve) => {
-    client.on('count', (count) => {
+    client.once('count', (count) => {
       resolve(count);
     });
   });
@@ -144,7 +144,7 @@ function countAndWait(client) {
 function sendBadPayloadAndWait(client) {
   client.send('Non JSON');
   return new Promise((resolve) => {
-    client.on('protocolError', (payload) => {
+    client.once('protocolError', (payload) => {
       resolve(payload);
     });
   });
@@ -155,7 +155,7 @@ function sendInvalidCommandAndWait(client) {
     type: 'Unknown',
   });
   return new Promise((resolve) => {
-    client.on('protocolError', (payload) => {
+    client.once('protocolError', (payload) => {
       resolve(payload);
     });
   });
