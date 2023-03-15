@@ -31,7 +31,7 @@ The client app interacts with user via stdin, available commands:
 - u - sends unsubscribe
 - c - sends countSubscribers
 
-Both, server and client writes logs to stdout. To silence heartbeat messages in the client app, you can pass SILENCE_HEARTBEAT=true env.
+Both, server and client writes logs to stdout. To silence heartbeat messages in the client app, you can pass SILENCE_HB=true env.
 
 ```
 SERVER_ADDRESS='ws://127.0.0.1:8080'
