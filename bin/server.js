@@ -1,4 +1,4 @@
-const SubscribeServer = require('../src/server');
+const SubscriptionServer = require('../src/server');
 
 process.on('unhandledRejection', (error) => {
   throw error;
@@ -12,7 +12,7 @@ process.on('uncaughtException', (error) => {
 const PORT = parseInt(process.env.PORT) || 8080;
 const HEARTBEAT_INTERVAL_IN_MS = parseInt(process.env.HB_INT) || 1000;
 
-const server = new SubscribeServer({
+const server = new SubscriptionServer({
   heartbeatInterval: HEARTBEAT_INTERVAL_IN_MS,
 });
 

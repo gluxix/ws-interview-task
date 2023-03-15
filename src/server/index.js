@@ -10,11 +10,11 @@ const DEFAULT_OPTS = {
   unsubscribeDelay: 8000,
 }
 
-class SubscribeServer {
+class SubscriptionServer {
   #opts;
   #wsServer;
   #heartbeatTimer;
-  #subsctiptions;
+  #subscriptions;
 
   /**
    * @param {object} [opts] Server options 
@@ -26,7 +26,7 @@ class SubscribeServer {
     this.#opts = { ...DEFAULT_OPTS, ...opts };
     this.#wsServer = null;
     this.#heartbeatTimer = null;
-    this.#subsctiptions = new Subscriptions(this.#opts.subscribeDelay, this.#opts.unsubscribeDelay);
+    this.#subscriptions = new Subscriptions(this.#opts.subscribeDelay, this.#opts.unsubscribeDelay);
   }
 
   /**
@@ -47,12 +47,13 @@ class SubscribeServer {
         this.#startHeartbeat();
       })
       .on('connection', (client) => {
+        client.isAlive = true;
         client
           .on('message', (data) => {
             this.#handleMessage(client, data);
           })
           .on('close', () => {
-            this.#subsctiptions.clear(client);
+            this.#subscriptions.clear(client);
           })
           .on('error', (err) => {
             console.error(err);
@@ -91,19 +92,17 @@ class SubscribeServer {
 
     this.#heartbeatTimer = setInterval(() => {
       this.#wsServer.clients.forEach((client) => {
-        // if (client.isAlive !== true) {
-        //   return client.terminate();
-        // }
+        if (client.isAlive !== true) {
+          return client.terminate();
+        }
 
-        // client.isAlive = false;
+        client.isAlive = false;
         this.#send(client, {
           type: Commands.Heartbeat,
           updatedAt: Date.now(),
         });
       });
     }, this.#opts.heartbeatInterval);
-
-    console.log(`Heartbeating each ${this.#opts.heartbeatInterval}ms has been started`);
   }
 
   #stopHeartbeat() {
@@ -124,7 +123,11 @@ class SubscribeServer {
 
   #parseData(data) {
     try {
-      return JSON.parse(data.toString());
+      const parsed = JSON.parse(data.toString());
+      if (!parsed.type) {
+        throw new Error('Payload has no type property');
+      }
+      return parsed;
     } catch (err) {
       throw new BadPayload(err);
     }
@@ -161,7 +164,7 @@ class SubscribeServer {
   }
 
   #handleSubscribe(client) {
-    this.#subsctiptions.subscribe(client)
+    this.#subscriptions.subscribe(client)
       .then((subscriptionDate) => {
         this.#send(client, {
           type: Commands.Subscribe,
@@ -175,7 +178,7 @@ class SubscribeServer {
   }
 
   #handleUnsubscribe(client) {
-    this.#subsctiptions.unsubscribe(client)
+    this.#subscriptions.unsubscribe(client)
       .then((unsubscriptionDate) => {
         this.#send(client, {
           type: Commands.Unsubscribe,
@@ -191,7 +194,7 @@ class SubscribeServer {
   #handleCountSubscribers(client) {  
     this.#send(client, {
       type: Commands.CountSubscribers,
-      count: this.#subsctiptions.subscribersCount(),
+      count: this.#subscriptions.subscribersCount(),
       updatedAt: Date.now(),
     });
   }
@@ -219,4 +222,4 @@ class SubscribeServer {
   }
 }
 
-module.exports = SubscribeServer;
+module.exports = SubscriptionServer;
